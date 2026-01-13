@@ -5,7 +5,7 @@ from typing import Optional
 import typer
 
 from .client import NmrXivClient, NmrXivError
-from .output import output_error, output_json
+from .output import output_error, output_item, output_json, output_table
 
 app = typer.Typer(
     help="nmrXiv dataset search and download tool for Claude Code",
@@ -35,15 +35,34 @@ def list(
                 output_error(f"Unknown type: {type}. Use 'project' or 'dataset'.")
                 return
 
-            result = {
-                "items": [item.model_dump() for item in response.items],
-                "count": len(response.items),
-                "total": response.total,
-                "page": response.page,
-                "last_page": response.last_page,
-                "type": type,
-            }
-            output_json(result)
+            if json_output:
+                result = {
+                    "items": [item.model_dump() for item in response.items],
+                    "count": len(response.items),
+                    "total": response.total,
+                    "page": response.page,
+                    "last_page": response.last_page,
+                    "type": type,
+                }
+                output_json(result)
+            else:
+                # Human-readable table output
+                if type == "project":
+                    columns = [
+                        ("name", "Name"),
+                        ("identifier", "ID"),
+                        ("doi", "DOI"),
+                    ]
+                else:
+                    columns = [
+                        ("name", "Name"),
+                        ("type", "Type"),
+                        ("identifier", "ID"),
+                        ("doi", "DOI"),
+                    ]
+                data = [item.model_dump() for item in response.items]
+                footer = f"Showing {len(response.items)} of {response.total} {type}s (page {response.page} of {response.last_page})"
+                output_table(data, columns, title=f"nmrXiv {type.title()}s", footer=footer)
     except NmrXivError as e:
         output_error(e.message, code=e.status_code or 1)
 
@@ -81,29 +100,53 @@ def search(
             if experiment_type:
                 # Dataset filtering by experiment type
                 response = client.filter_datasets(experiment_type, page=page)
-                result = {
-                    "results": [item.model_dump() for item in response.items],
-                    "count": len(response.items),
-                    "search_type": "dataset",
-                    "query": {"experiment_type": experiment_type},
-                    "page": response.page,
-                    "total": response.total,
-                    "note": "Total reflects all datasets, not filtered count",
-                }
+                if json_output:
+                    result = {
+                        "results": [item.model_dump() for item in response.items],
+                        "count": len(response.items),
+                        "search_type": "dataset",
+                        "query": {"experiment_type": experiment_type},
+                        "page": response.page,
+                        "total": response.total,
+                        "note": "Total reflects all datasets, not filtered count",
+                    }
+                    output_json(result)
+                else:
+                    columns = [
+                        ("name", "Name"),
+                        ("type", "Type"),
+                        ("identifier", "ID"),
+                        ("project", "Project"),
+                    ]
+                    data = [item.model_dump() for item in response.items]
+                    footer = f"Found {len(response.items)} {experiment_type} datasets on page {response.page}"
+                    output_table(data, columns, title=f"Datasets: {experiment_type}", footer=footer)
             else:
                 # Molecular search
                 response = client.search_molecules(query=query, smiles=smiles, page=page)
-                result = {
-                    "results": [item.model_dump() for item in response.items],
-                    "count": len(response.items),
-                    "search_type": "molecule",
-                    "query": {
-                        k: v for k, v in {"query": query, "smiles": smiles}.items() if v
-                    },
-                    "page": response.page,
-                    "total": response.total,
-                }
-            output_json(result)
+                if json_output:
+                    result = {
+                        "results": [item.model_dump() for item in response.items],
+                        "count": len(response.items),
+                        "search_type": "molecule",
+                        "query": {
+                            k: v for k, v in {"query": query, "smiles": smiles}.items() if v
+                        },
+                        "page": response.page,
+                        "total": response.total,
+                    }
+                    output_json(result)
+                else:
+                    columns = [
+                        ("iupac_name", "Name"),
+                        ("molecular_formula", "Formula"),
+                        ("molecular_weight", "MW"),
+                        ("canonical_smiles", "SMILES"),
+                    ]
+                    data = [item.model_dump() for item in response.items]
+                    search_desc = query or smiles
+                    footer = f"Found {len(response.items)} of {response.total} molecules (page {response.page})"
+                    output_table(data, columns, title=f"Molecules: {search_desc}", footer=footer)
     except NmrXivError as e:
         output_error(e.message, code=e.status_code or 1)
 
@@ -117,8 +160,11 @@ def show(
     try:
         with NmrXivClient() as client:
             item = client.get_item(item_id)
-            result = {"item": item, "id": item_id}
-            output_json(result)
+            if json_output:
+                result = {"item": item, "id": item_id}
+                output_json(result)
+            else:
+                output_item(item, title=item_id)
     except NmrXivError as e:
         output_error(e.message, code=e.status_code or 1)
 
