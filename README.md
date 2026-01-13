@@ -5,8 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A CLI tool for searching and downloading NMR spectroscopy datasets from [nmrxiv.org](https://nmrxiv.org). Designed for integration with Claude Code and other AI assistants, with JSON output by default for easy programmatic use. Includes a `/nmrxiv` skill for Claude Code. You can then ask things like: 
-```I need 20 nmr datasets from nmrxiv from molecules with less than 20 heavy atoms. The nmr data itself should be Bruker data. Every dataset should at least have 1D proton and carbon spectra, DEPT or APT, HSQC and HMBC. More is ok. Place all of them here in this
-  folder. One subfolder for each nmr dataset of one and only one molecule.```
+"I need 20 nmr datasets from nmrxiv from molecules with less than 20 heavy atoms. The nmr data itself should be Bruker data. Every dataset should at least have 1D proton and carbon spectra, DEPT or APT, HSQC and HMBC. More is ok. Place all of them here in this
+  folder. One subfolder for each nmr dataset of one and only one molecule."
 
 ## Installation
 
