@@ -8,21 +8,52 @@ version = "0.1.0"
 description = "CLI tool for searching and downloading NMR datasets from nmrxiv.org"
 readme = "README.md"
 requires-python = ">=3.10"
-license = "MIT"
+license = {file = "LICENSE"}
 authors = [
-    { name = "Christoph Steinbeck" }
+    { name = "Christoph Steinbeck", email = "christoph.steinbeck@gmail.com" }
+]
+keywords = [
+    "nmr",
+    "spectroscopy",
+    "chemistry",
+    "nmrxiv",
+    "cli",
+    "natural-products",
+    "structure-elucidation",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 dependencies = [
-    "typer[all]>=0.12.0",
+    "typer>=0.12.0",
     "httpx>=0.27.0",
     "pydantic>=2.5.0",
+    "rich>=13.0.0",
 ]
 
 [project.scripts]
 nmrxiv = "nmrxiv_downloader.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/steinbeck/nmrxiv-downloader"
+Repository = "https://github.com/steinbeck/nmrxiv-downloader.git"
+Issues = "https://github.com/steinbeck/nmrxiv-downloader/issues"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
     "ruff>=0.1.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["nmrxiv_downloader"]
