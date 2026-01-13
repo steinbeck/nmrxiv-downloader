@@ -4,7 +4,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A CLI tool for searching and downloading NMR spectroscopy datasets from [nmrxiv.org](https://nmrxiv.org). Designed for integration with Claude Code and other AI assistants, with JSON output by default for easy programmatic use.
+A CLI tool for searching and downloading NMR spectroscopy datasets from [nmrxiv.org](https://nmrxiv.org). Designed for integration with Claude Code and other AI assistants, with JSON output by default for easy programmatic use. Includes a `/nmrxiv` skill for Claude Code.
 
 ## Installation
 
