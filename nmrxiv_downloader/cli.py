@@ -21,21 +21,26 @@ def list(
         "-t",
         help="Type to list: project, dataset",
     ),
+    page: int = typer.Option(1, "--page", "-p", help="Page number"),
     json_output: bool = typer.Option(True, "--json/--no-json", help="Output as JSON"),
 ) -> None:
     """List items from nmrXiv (projects or datasets)."""
     try:
         with NmrXivClient() as client:
             if type == "project":
-                items = client.list_projects()
+                response = client.list_projects(page=page)
             elif type == "dataset":
-                items = client.list_datasets()
+                response = client.list_datasets(page=page)
             else:
                 output_error(f"Unknown type: {type}. Use 'project' or 'dataset'.")
+                return
 
             result = {
-                "items": [item.model_dump() for item in items],
-                "count": len(items),
+                "items": [item.model_dump() for item in response.items],
+                "count": len(response.items),
+                "total": response.total,
+                "page": response.page,
+                "last_page": response.last_page,
                 "type": type,
             }
             output_json(result)
@@ -45,12 +50,62 @@ def list(
 
 @app.command()
 def search(
-    query: Optional[str] = typer.Argument(None, help="Search query"),
+    query: Optional[str] = typer.Option(
+        None, "--query", "-q", help="Search molecules by name or synonym"
+    ),
+    smiles: Optional[str] = typer.Option(
+        None, "--smiles", "-s", help="Search molecules by SMILES substructure"
+    ),
+    experiment_type: Optional[str] = typer.Option(
+        None, "--type", "-t", help="Filter datasets by experiment type (e.g., hsqc, 1d-13c, cosy)"
+    ),
+    page: int = typer.Option(1, "--page", "-p", help="Page number"),
     json_output: bool = typer.Option(True, "--json/--no-json", help="Output as JSON"),
 ) -> None:
-    """Search nmrXiv datasets by criteria."""
-    result = {"status": "not implemented", "command": "search"}
-    output_json(result)
+    """Search nmrXiv for molecules or datasets.
+
+    Examples:
+        nmrxiv search --query kaempferol       # Search by compound name
+        nmrxiv search --smiles CCO             # Search by SMILES substructure
+        nmrxiv search --type hsqc              # Filter datasets by experiment type
+        nmrxiv search --type "1d-13c"          # Filter datasets by 1D 13C experiments
+    """
+    if not any([query, smiles, experiment_type]):
+        output_error(
+            "Please provide at least one search criterion: --query, --smiles, or --type"
+        )
+        return
+
+    try:
+        with NmrXivClient() as client:
+            if experiment_type:
+                # Dataset filtering by experiment type
+                response = client.filter_datasets(experiment_type, page=page)
+                result = {
+                    "results": [item.model_dump() for item in response.items],
+                    "count": len(response.items),
+                    "search_type": "dataset",
+                    "query": {"experiment_type": experiment_type},
+                    "page": response.page,
+                    "total": response.total,
+                    "note": "Total reflects all datasets, not filtered count",
+                }
+            else:
+                # Molecular search
+                response = client.search_molecules(query=query, smiles=smiles, page=page)
+                result = {
+                    "results": [item.model_dump() for item in response.items],
+                    "count": len(response.items),
+                    "search_type": "molecule",
+                    "query": {
+                        k: v for k, v in {"query": query, "smiles": smiles}.items() if v
+                    },
+                    "page": response.page,
+                    "total": response.total,
+                }
+            output_json(result)
+    except NmrXivError as e:
+        output_error(e.message, code=e.status_code or 1)
 
 
 @app.command()

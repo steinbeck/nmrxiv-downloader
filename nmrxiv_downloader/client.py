@@ -4,7 +4,7 @@ from typing import Any
 
 import httpx
 
-from .models import Dataset, Project, Study
+from .models import Dataset, Molecule, PaginatedResponse, Project, Study
 
 
 class NmrXivError(Exception):
@@ -65,12 +65,18 @@ class NmrXivClient:
         except httpx.RequestError as e:
             raise NmrXivError(f"Request failed: {e}") from e
 
-    def list_projects(self) -> list[Project]:
-        """List all projects."""
-        data = self._request("GET", "/list/projects")
-        # Response is {"data": [...]}
-        items = data.get("data", data) if isinstance(data, dict) else data
-        return [Project(**item) for item in items]
+    def list_projects(self, page: int = 1) -> PaginatedResponse:
+        """List projects with pagination."""
+        data = self._request("GET", f"/list/projects?page={page}")
+        items = data.get("data", [])
+        meta = data.get("meta", {})
+        return PaginatedResponse(
+            items=[Project(**item) for item in items],
+            total=meta.get("total", len(items)),
+            page=meta.get("current_page", page),
+            per_page=meta.get("per_page", 100),
+            last_page=meta.get("last_page", 1),
+        )
 
     def list_studies(self) -> list[Study]:
         """List all studies."""
@@ -78,14 +84,82 @@ class NmrXivClient:
         items = data.get("data", data) if isinstance(data, dict) else data
         return [Study(**item) for item in items]
 
-    def list_datasets(self) -> list[Dataset]:
-        """List all datasets."""
-        data = self._request("GET", "/list/datasets")
-        items = data.get("data", data) if isinstance(data, dict) else data
-        return [Dataset(**item) for item in items]
+    def list_datasets(self, page: int = 1) -> PaginatedResponse:
+        """List datasets with pagination."""
+        data = self._request("GET", f"/list/datasets?page={page}")
+        items = data.get("data", [])
+        meta = data.get("meta", {})
+        return PaginatedResponse(
+            items=[Dataset(**item) for item in items],
+            total=meta.get("total", len(items)),
+            page=meta.get("current_page", page),
+            per_page=meta.get("per_page", 100),
+            last_page=meta.get("last_page", 1),
+        )
 
     def get_item(self, item_id: str) -> dict[str, Any]:
         """Get item by identifier."""
         data = self._request("GET", f"/{item_id}")
-        # Response is {"data": {...}}
         return data.get("data", data) if isinstance(data, dict) else data
+
+    def search_molecules(
+        self, query: str | None = None, smiles: str | None = None, page: int = 1
+    ) -> PaginatedResponse:
+        """Search molecules by name/synonym or SMILES substructure.
+
+        Args:
+            query: Search by compound name or synonym
+            smiles: Search by SMILES substructure
+            page: Page number (default 1)
+
+        Returns:
+            PaginatedResponse with Molecule objects
+        """
+        path = f"/search/{smiles}" if smiles else "/search"
+        body = {}
+        if query:
+            body["query"] = query
+
+        data = self._request("POST", path, json=body if body else None)
+        items = data.get("data", [])
+        return PaginatedResponse(
+            items=[Molecule(**item) for item in items],
+            total=data.get("total", len(items)),
+            page=data.get("current_page", page),
+            per_page=data.get("per_page", 24),
+            last_page=data.get("last_page", 1),
+        )
+
+    def filter_datasets(
+        self, experiment_type: str, page: int = 1
+    ) -> PaginatedResponse:
+        """Filter datasets by experiment type (client-side filtering).
+
+        Args:
+            experiment_type: Experiment type to filter (e.g., "hsqc", "1d-13c", "cosy")
+            page: Page number to fetch
+
+        Returns:
+            PaginatedResponse with filtered Dataset objects.
+            Note: total/last_page reflect the full dataset list, not filtered results.
+        """
+        response = self.list_datasets(page=page)
+
+        def normalize(s: str) -> str:
+            """Normalize string for comparison."""
+            return " ".join(s.lower().replace("-", " ").replace("_", " ").split())
+
+        search_term = normalize(experiment_type)
+        filtered = [
+            item
+            for item in response.items
+            if item.type and search_term in normalize(item.type)
+        ]
+
+        return PaginatedResponse(
+            items=filtered,
+            total=response.total,  # Note: this is total datasets, not filtered
+            page=response.page,
+            per_page=response.per_page,
+            last_page=response.last_page,
+        )
