@@ -357,6 +357,44 @@ This tool uses the [nmrXiv REST API](https://nmrxiv.org/api/v1) which is publicl
 - `POST /search` - Search molecules by name
 - `POST /search/{smiles}` - Search by SMILES substructure
 
+## Claude Code Integration
+
+This tool is designed for use with [Claude Code](https://claude.ai/code) and other AI assistants.
+
+### Automatic Context (CLAUDE.md)
+
+When working in a directory containing this project, Claude Code automatically reads `CLAUDE.md` which provides:
+- Command reference with JSON output paths
+- Common workflows
+- Key facts about the data model
+
+### Install Skill (Global Access)
+
+For global access to nmrxiv instructions from any directory:
+
+```bash
+# Clone the repo (if not already done)
+git clone https://github.com/steinbeck/nmrxiv-downloader.git
+cd nmrxiv-downloader
+
+# Install the skill
+./scripts/install-skill.sh
+```
+
+This installs the `/nmrxiv` skill to `~/.claude/skills/nmrxiv/`. Claude Code will automatically use this skill when you ask about NMR data or nmrxiv.
+
+### JSON Output for AI
+
+All commands output JSON by default, making it easy for AI assistants to parse results:
+
+```bash
+# Get download URL programmatically
+nmrxiv show P5 | jq -r '.item.download_url'
+
+# List all HSQC dataset identifiers
+nmrxiv search --type hsqc | jq -r '.results[].identifier'
+```
+
 ## Requirements
 
 - Python 3.10+
