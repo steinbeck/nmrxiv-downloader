@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-13)
 
 **Core value:** Claude Code integration — easy programmatic use during NMR analysis tasks
-**Current focus:** Phase 3 — Browse
+**Current focus:** Phase 4 — Download
 
 ## Current Position
 
-Phase: 3 of 4 (Browse)
+Phase: 4 of 4 (Download)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-01-13 — Phase 2 complete
+Last activity: 2026-01-13 — Phase 3 complete
 
-Progress: █████░░░░░ 50%
+Progress: ███████░░░ 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: ~10 minutes
-- Total execution time: ~30 minutes
+- Total execution time: ~40 minutes
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: █████░░░░░ 50%
 |-------|-------|-------|----------|
 | 1. Foundation | 2/2 | ~15 min | ~7.5 min |
 | 2. Search | 1/1 | ~15 min | ~15 min |
+| 3. Browse | 1/1 | ~10 min | ~10 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~5 min), 01-02 (~10 min), 02-01 (~15 min)
+- Last 5 plans: 01-01 (~5 min), 01-02 (~10 min), 02-01 (~15 min), 03-01 (~10 min)
 - Trend: Stable
 
 ## Accumulated Context
@@ -46,7 +47,7 @@ Recent decisions affecting current work:
 - All output structured as JSON for Claude Code
 - Search endpoint searches molecules, not datasets
 - Dataset filtering is client-side only
-- Combined Phase 2 plans (02-01, 02-02) since API simpler than expected
+- Human-readable output via --no-json flag using Rich library
 
 ### Deferred Issues
 
@@ -60,5 +61,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-13
-Stopped at: Phase 2 complete, ready for Phase 3
+Stopped at: Phase 3 complete, ready for Phase 4
 Resume file: None

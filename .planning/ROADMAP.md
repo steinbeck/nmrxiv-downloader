@@ -16,7 +16,7 @@ None
 
 - [x] **Phase 1: Foundation** - Project setup, CLI skeleton, nmrxiv API discovery
 - [x] **Phase 2: Search** - Search commands for experiment type, format, molecular properties, identifiers
-- [ ] **Phase 3: Browse** - Results display with rich metadata and JSON output
+- [x] **Phase 3: Browse** - Results display with rich metadata and JSON output
 - [ ] **Phase 4: Download** - Dataset download with organized directory structure
 
 ## Phase Details
@@ -44,11 +44,11 @@ Plans:
 ### Phase 3: Browse
 **Goal**: Display search results with rich metadata in human and machine-readable formats
 **Depends on**: Phase 2
-**Research**: Unlikely (internal output formatting)
-**Plans**: TBD
+**Research**: None needed
+**Plans**: Complete
 
 Plans:
-- [ ] 03-01: Rich metadata display and JSON output
+- [x] 03-01: Rich metadata display with table and panel output
 
 ### Phase 4: Download
 **Goal**: Download datasets to local disk with organized directory structure
@@ -68,5 +68,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-13 |
 | 2. Search | 1/1 | Complete | 2026-01-13 |
-| 3. Browse | 0/1 | Not started | - |
+| 3. Browse | 1/1 | Complete | 2026-01-13 |
 | 4. Download | 0/1 | Not started | - |
