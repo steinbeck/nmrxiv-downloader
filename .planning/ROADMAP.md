@@ -15,7 +15,7 @@ None
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Foundation** - Project setup, CLI skeleton, nmrxiv API discovery
-- [ ] **Phase 2: Search** - Search commands for experiment type, format, molecular properties, identifiers
+- [x] **Phase 2: Search** - Search commands for experiment type, format, molecular properties, identifiers
 - [ ] **Phase 3: Browse** - Results display with rich metadata and JSON output
 - [ ] **Phase 4: Download** - Dataset download with organized directory structure
 
@@ -35,12 +35,11 @@ Plans:
 ### Phase 2: Search
 **Goal**: Implement all search capabilities (experiment type, format, molecular properties, identifiers)
 **Depends on**: Phase 1
-**Research**: Unlikely (uses API patterns from Phase 1)
-**Plans**: TBD
+**Research**: Done (API search capabilities explored)
+**Plans**: Combined into single plan (API simpler than expected)
 
 Plans:
-- [ ] 02-01: Search by experiment type and format
-- [ ] 02-02: Search by molecular properties and identifiers
+- [x] 02-01: Search by experiment type, molecular properties, and identifiers (combined)
 
 ### Phase 3: Browse
 **Goal**: Display search results with rich metadata in human and machine-readable formats
@@ -68,6 +67,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-13 |
-| 2. Search | 0/2 | Not started | - |
+| 2. Search | 1/1 | Complete | 2026-01-13 |
 | 3. Browse | 0/1 | Not started | - |
 | 4. Download | 0/1 | Not started | - |
