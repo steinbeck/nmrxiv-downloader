@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-13)
 
 **Core value:** Claude Code integration — easy programmatic use during NMR analysis tasks
-**Current focus:** Phase 4 — Download
+**Current focus:** Project complete!
 
 ## Current Position
 
 Phase: 4 of 4 (Download)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-01-13 — Phase 3 complete
+Plan: 04-01 (Complete)
+Status: **PROJECT COMPLETE**
+Last activity: 2026-01-13 — Phase 4 complete
 
-Progress: ███████░░░ 75%
+Progress: ██████████ 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: ~10 minutes
-- Total execution time: ~40 minutes
+- Total execution time: ~50 minutes
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: ███████░░░ 75%
 | 1. Foundation | 2/2 | ~15 min | ~7.5 min |
 | 2. Search | 1/1 | ~15 min | ~15 min |
 | 3. Browse | 1/1 | ~10 min | ~10 min |
+| 4. Download | 1/1 | ~10 min | ~10 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~5 min), 01-02 (~10 min), 02-01 (~15 min), 03-01 (~10 min)
+- All plans: 01-01 (~5 min), 01-02 (~10 min), 02-01 (~15 min), 03-01 (~10 min), 04-01 (~10 min)
 - Trend: Stable
 
 ## Accumulated Context
@@ -61,5 +62,24 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-13
-Stopped at: Phase 3 complete, ready for Phase 4
+Stopped at: Project complete
 Resume file: None
+
+## Project Summary
+
+All 4 phases completed successfully. The nmrxiv-downloader CLI is ready for use by Claude Code:
+
+**Commands:**
+- `nmrxiv list --type project` - List projects
+- `nmrxiv list --type dataset` - List datasets
+- `nmrxiv search --query <name>` - Search molecules by name
+- `nmrxiv search --smiles <smiles>` - Search by SMILES substructure
+- `nmrxiv search --type <experiment>` - Filter datasets by experiment type
+- `nmrxiv show <id>` - Show item details
+- `nmrxiv download <id>` - Download project archive
+
+**Features:**
+- JSON output by default for Claude Code integration
+- Human-readable tables/panels with --no-json
+- Progress bar for downloads
+- ZIP extraction with --extract flag

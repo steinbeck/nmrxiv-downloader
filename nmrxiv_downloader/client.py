@@ -1,6 +1,7 @@
 """nmrxiv API client."""
 
-from typing import Any
+from pathlib import Path
+from typing import Any, Callable
 
 import httpx
 
@@ -163,3 +164,54 @@ class NmrXivClient:
             per_page=response.per_page,
             last_page=response.last_page,
         )
+
+    def get_download_url(self, item_id: str) -> str | None:
+        """Get download URL for an item.
+
+        Args:
+            item_id: Item identifier (e.g., P5, D410)
+
+        Returns:
+            Download URL if available, None otherwise
+        """
+        item = self.get_item(item_id)
+        return item.get("download_url")
+
+    def download_file(
+        self,
+        url: str,
+        dest: Path,
+        progress_callback: Callable[[int, int], None] | None = None,
+    ) -> Path:
+        """Download a file from URL with optional progress callback.
+
+        Args:
+            url: URL to download from
+            dest: Destination path for the file
+            progress_callback: Optional callback(downloaded_bytes, total_bytes)
+
+        Returns:
+            Path to the downloaded file
+        """
+        try:
+            # Use a separate client for downloads (no base_url)
+            with httpx.stream("GET", url, timeout=300.0, follow_redirects=True) as response:
+                response.raise_for_status()
+                total = int(response.headers.get("content-length", 0))
+
+                with open(dest, "wb") as f:
+                    downloaded = 0
+                    for chunk in response.iter_bytes(chunk_size=8192):
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        if progress_callback:
+                            progress_callback(downloaded, total)
+
+            return dest
+        except httpx.HTTPStatusError as e:
+            raise NmrXivError(
+                f"Download failed: HTTP {e.response.status_code}",
+                status_code=e.response.status_code,
+            ) from e
+        except httpx.RequestError as e:
+            raise NmrXivError(f"Download failed: {e}") from e
